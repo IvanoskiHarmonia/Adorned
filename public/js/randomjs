@@ -1,0 +1,57 @@
+//Toggle part ends here
+
+
+/*
+var toggleUpload = false; //upload button
+var toggleVar = false;//Warm cold function var
+var toggleVarFileShow = false;// 
+var togglechoose = false;
+/*
+function uploadToggle(){
+  $(".divupload").toggleClass("btn-group");
+}*/
+/*
+function uploadToggle() { // upload button
+  if(toggleUpload == false)
+  {toggleUpload = true;
+    $(".divupload").toggleClass("d-none");
+  }else if (toggleVarFileShow == true)
+  {
+    toggleUpload = false;
+    $(".divupload").toggleClass("d-none");
+  }
+}
+function chooseToggle() { // choose button function
+  if(toggleUpload == true && toggleVarFileShow == true && togglechoose == false && toggleVar){
+    toggleChoose = true; toggleUpload = false; toggleVar
+    $(".divupload").toggleClass("d-none");
+    $(".divchoose").toggleClass("d-none");
+  }
+
+}
+// Toggle part $(".divcold").toggleClass("d-none");
+function warmOrCold(element) {//warm cold button function.
+  var wc = element.dataset.wc;
+  if(wc == "c" && toggleVarFileShow == false){ // 
+    $(".divcold").toggleClass("d-none");
+  }else if (wc == "c" && toggleVarFileShow == true){
+    toggleVarFileShow = false;
+    $(".divcold").toggleClass("d-none");
+    $(".divfile").toggleClass("d-none");
+  }
+}
+//$(".divfile").toggleClass("d-none");}
+function fileButtonShow() { // shirt and all those button show for the upload link.
+  if(toggleVarFileShow == false)
+  {toggleVarFileShow = true;
+    $(".divfile").toggleClass("d-none");
+  }else if (toggleVarFileShow == true)
+  {
+    toggleVarFileShow = false;
+    $(".divfile").toggleClass("d-none");
+  }
+  //$(".divfile").toggleClass("d-none");
+  
+  console.log(toggleVarFileShow);
+}
+*/
