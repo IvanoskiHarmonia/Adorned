@@ -59,7 +59,6 @@ function shirtPantsShoes(str){
 //not used in the moment
 function setFileName(){
   $("#upFileLabel")[0].innerHTML = $("#fileUp1")[0].files[0].name || "Choose File";
-  //console.log("#fileUp1")[0];
 }
 
 
