@@ -15,23 +15,23 @@
         </head>
 
 <body>
-  <ul class="nav nav-pills nav-justified navbar-dark bg-dark">
+  <ul class="nav nav-pills nav-justified">
     <li class="nav-item">
-      <a class="nav-link active" href="http://localhost:3000/">Home</a>
+      <a class="nav-link activeHome" href="http://localhost:3000/">Home</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" >Upload
+      <a class="nav-link navbarCol" data-toggle="collapse" href="#uploadToggle" role="button" aria-expanded="false" aria-controls="uploadToggle" >Upload
         <span class="sr-only">(current)</span>
       </a>
     </li>
       <li class="nav-item">     
-        <a class="nav-link" data-toggle="collapse" data-target = "#clothesExample" href="#clothesExample" role="button" aria-expanded="false" aria-controls="clothesExample">Choose
+        <a class="nav-link navbarCol" onclick="itemsParse()" data-toggle="collapse" data-target="#clothesToggle" href="#clothesToggle" role="button" aria-expanded="false" aria-controls="clothesExample">Choose
           <span class="sr-only">(current)</span>
         </a>
       </li>
   </ul>
                     
-  <div class="justify-content-center collapse" id="collapseExample" width="33%">
+  <div class="justify-content-center collapse" id="uploadToggle" width="33%">
     <div class="card card-body divupload justify-content-center">
       <div class="btn-group justify-content-center" role="group" aria-label="Basic example">
         <button type="button" class="btn btn-error" data-wc="w" onclick="switchTemp('w')">Warm</button>
@@ -45,7 +45,7 @@
           <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('ss')">Shoes</button>
         </div>
       </div>
-    </div> <!-- <input class="custom-file-input" id="fileUp1" onchange="setFileName()"> -->
+    </div> 
     <div class="container">
       <h1>File Upload</h1>
       <%= typeof msg != 'undefined' ? msg : '' %>
@@ -63,7 +63,6 @@
           </div>
         </div>
         <button type="submit" class="btn" onchange="getValueSubmitFile()" id="submitFile">Submit</button>
-        <!-- <input class="rAr"value="<%= typeof input != 'undefined' ? input : '' %>"id="filesInput" type="text" name="files"  /> -->
       </form>
       <br>
       <img src="<%= typeof file != 'undefined' ? file : '' %>" class="responsive-img">
@@ -72,10 +71,9 @@
   </div>
 
 
+    <div class="collapse" id="clothesToggle" height = "auto">
 
-    <div class="collapse" id="clothesExample" height = "auto">
-      <!-- onclick="changePic('one')" -->
-      <img class="rounded mx-auto d-block img-thumbnail" id="myImage" src="/images/shirtStart.png" width="33.3%" height="50%">
+      <img class="rounded mx-auto d-block img-thumbnail" id="myImage" onclick="changePic('one')" src="/images/shirtStart.png" width="33.3%" height="50%">
 
       <img class="rounded mx-auto d-block img-thumbnail" id="myImage2"onclick="changePic('two')" src="/images/pantsStart.png" width="33.3%" height="50%">
       

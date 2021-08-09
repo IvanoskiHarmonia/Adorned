@@ -3,14 +3,10 @@ const multer = require('multer');
 const ejs = require('ejs');
 const path = require('path');
 const fs = require('fs');
-//var specs = require('./public/js/script.js');
 
+//reads the files names from the folder and puts them in the files variable
 var files = fs.readdirSync('./public/uploads/');
-console.log(files);
 
-
-// var filesz = files.slice(1);
-// console.log(filesz);
 
 const storage = multer.diskStorage({
   destination: './public/uploads/',
@@ -57,15 +53,9 @@ app.use(express.static('./public'));
 app.get('/', (req, res) => res.render('index'));
 
 app.get('/clothes', function(request, response){
-  console.log('Clothes');
+  console.log('Files Sent!!!');
   response.json([
     files
-    // 'cimyImage-1620418295776.jpg',
-    // 'wimyImage-1620406169938.jpg',
-    // 'wimyImage-1620408199885.jpg',
-    // 'wimyImage-1620418275111.jpg',
-    // 'wimyImage-1620432749865.jpg',
-    // 'wimyImage-1620432891702.jpg' 
   ]);
 });
 
@@ -101,12 +91,3 @@ const port = 3000;
 app.listen(port, () => console.log(`Server started on port ${port}`));
 
 
-
-
-// //https://stackoverflow.com/questions/66924665/node-js-localhost-server-is-not-showing-the-image
-// //https://expressjs.com/en/starter/static-files.html
-// //https://www.youtube.com/watch?v=7UErZ43jzrU 
-// //https://stackabuse.com/handling-file-uploads-in-node-js-with-expres-and-multer/
-// //https://en.cppreference.com/w/cpp/language/range-for
-// //https://expressjs.com/en/guide/routing.html
-// //https://www.npmjs.com/package/multer
