@@ -15,8 +15,8 @@ const storage = multer.diskStorage({
     cb(null,reqognizeName + file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
-// 
-// Init Upload
+
+// upload function, 
 const upload = multer({
   storage: storage,
   limits:{fileSize: 10000000},
@@ -41,13 +41,14 @@ function checkFileType(file, cb){
   }
 }
 
-// Init app
+// Invoking the express function, 
+// express has a single function so this way when we give the function to the constant app we are allowed to invoke express functions on demand.
 const app = express();
 
-// EJS
+// view ejs file this can be fixed later because I don't like ejs html.
 app.set('view engine', 'ejs');
 
-// Public Folder
+// serve static folder Folder
 app.use(express.static('./public'));
 
 app.get('/', (req, res) => res.render('index'));
@@ -61,6 +62,8 @@ app.get('/clothes', function(request, response){
 
 
 
+// what post does is basically CRUD principle update to the *database*,
+// which here my database is uploads folder inside of the public directory
 app.post('/upload', (req, res) => {
   upload(req, res, (err) => {
     console.log(req.body.temperature + req.body.item);
@@ -86,8 +89,9 @@ app.post('/upload', (req, res) => {
   });
 });
 
-const port = 3000;
 
+
+const port = 3000;
 app.listen(port, () => console.log(`Server started on port ${port}`));
 
 

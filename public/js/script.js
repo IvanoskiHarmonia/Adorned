@@ -5,6 +5,7 @@ window.onload = function(){
 
 var filesNames = [];
 
+// No reason at all to do this.
 const clothes = {
   items : "filesNames[0]",
   set setItems(setItems) {
@@ -19,11 +20,17 @@ function loadClothes(){
   xh.open("GET", window.location.origin + '/clothes', true);
   xh.send(null);
   
-  //syncronous - waits for the response to come back to continue with other shit
-  //asyncronous - doesn't wait for the response
+  // I gave this explanations to my self my googling the, and still got them wrong lmao.
+  // syncronous - everything works at the same time
+  // asyncronous - functions that work in order.
   xh.onload = function(){
     var data = JSON.parse(xh.responseText);
 
+    // this is the reason why you need to understand something before you do it.
+    // I had no idea how to access elements in 2D arrays lmao. 
+    console.log(data[0][0]);
+
+    // WHY DID I DO THIS
     data.forEach( dataItems => {
         for (let i = 0; i < dataItems.length; ++i)
           filesNames[i] = dataItems[i];
@@ -38,6 +45,7 @@ function loadClothes(){
 
 
 
+// Spaghetti are less confusing than this I am ashamed...
 var warmShirts = [],warmPants = [], warmShoes = [],coldShirts = [],coldPants = [], coldShoes = [];
 function itemsParse() {
   for(let i = 0;i < clothes.items.length; ++i){
@@ -58,6 +66,8 @@ function itemsParse() {
 }
 
 //Function that changes the pics on the chose menu.
+
+// What in this world am I doing here................... I think this should be put in the hall of fame of 
 function changePic(chg){
 
   var num = Math.floor(Math.random() * clothes.items.length);
@@ -110,7 +120,7 @@ function changePic(chg){
 
   
 
-
+// why did I put clothes together with their seasons I HAVE NO IDEA.
 var specs = {
   warm : false,
   cold : false,
@@ -121,13 +131,13 @@ var specs = {
 
 // clicking on Warm button
 function switchTemp(wc){
-  specs.warm = wc == 'w';
-  specs.cold = !specs.warm; 
-  console.log(specs.warm + ' ' + specs.cold);
-  $("#temperature").val(specs.warm ? 'warm' : 'cold');
+  specs.warm = wc == 'w'; // my brother helped me with this I have no idea how it works.
+  specs.cold = !specs.warm;  // this one neither.
+  console.log(specs.warm + ' ' + specs.cold); 
+  $("#temperature").val(specs.warm ? 'warm' : 'cold'); 
 }
 function shirtPantsShoes(str){
-  specs.shirt = str == 'st';
+  specs.shirt = str == 'st'; // 
   specs.pants = str == 'p';
   specs.shoes = str == 'ss';
   $("#item").val(specs.shirt ? 'Shirt' : (specs.pants ? 'Pants' : 'Shoes'));

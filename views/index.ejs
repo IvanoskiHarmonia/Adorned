@@ -1,89 +1,95 @@
 <!DOCTYPE html>
-  
-    <html>
-        
-        <head>
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-          <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-          <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>   
-          <link rel="stylesheet" href="../styles/style.css">
-          
-        </head>
+<html>      
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../styles/style.css">
+  </head>
 
-<body>
-  <ul class="nav nav-pills nav-justified">
-    <li class="nav-item">
-      <a class="nav-link activeHome" href="http://localhost:3000/">Home</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link navbarCol" data-toggle="collapse" href="#uploadToggle" role="button" aria-expanded="false" aria-controls="uploadToggle" >Upload
-        <span class="sr-only">(current)</span>
-      </a>
-    </li>
-      <li class="nav-item">     
-        <a class="nav-link navbarCol" onclick="itemsParse()" data-toggle="collapse" data-target="#clothesToggle" href="#clothesToggle" role="button" aria-expanded="false" aria-controls="clothesExample">Choose
+  <body>
+    <ul class="nav nav-pills nav-justified">
+      <li class="nav-item">
+        <a class="nav-link activeHome" href="http://localhost:3000/">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link navbarCol" data-toggle="collapse" href="#uploadToggle" role="button" aria-expanded="false" aria-controls="uploadToggle" >Upload
           <span class="sr-only">(current)</span>
         </a>
       </li>
-  </ul>
-                    
-  <div class="justify-content-center collapse" id="uploadToggle" width="33%">
-    <div class="card card-body divupload justify-content-center">
-      <div class="btn-group justify-content-center" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-error" data-wc="w" onclick="switchTemp('w')">Warm</button>
-        <button type="button" class="btn btn-error" data-wc="c" onclick="switchTemp('c')">Cold</button>
-      </div>
-    <div class="card divcold">
-      <div class="card-body">
-        <div class="btn-group1 " role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('st')">Shirt</button>
-          <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('p')">Pants</button>
-          <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('ss')">Shoes</button>
-        </div>
-      </div>
-    </div> 
-    <div class="container">
-      <h1>File Upload</h1>
-      <%= typeof msg != 'undefined' ? msg : '' %>
-      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <li class="nav-item">     
+          <a class="nav-link navbarCol" onclick="itemsParse()" data-toggle="collapse" data-target="#clothesToggle" href="#clothesToggle" role="button" aria-expanded="false" aria-controls="clothesExample">Choose
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+    </ul>
+                      
+    <div class="justify-content-center collapse" id="uploadToggle" width="33%">
+      <div class="card card-body divupload justify-content-center">
         
-        <input id="temperature" type="text" name="temperature" value="" />
-        <input id="item" type="text" name="item" value="" />
-        <div class="file-field input-field">
-          <div class="btn grey">
-            <span>File</span>
-            <input name="myImage" type="file">
-          </div>
-          <div class="file-path-wrapper">
-            <input class="file-path validate" type="text">
-          </div>
+        
+        <div class="btn-group justify-content-center" role="group" aria-label="Basic example">
+          <button type="button" class="btn btn-error" data-wc="w" onclick="switchTemp('w')">Warm</button>
+          <button type="button" class="btn btn-error" data-wc="c" onclick="switchTemp('c')">Cold</button>
         </div>
-        <button type="submit" class="btn" onchange="getValueSubmitFile()" id="submitFile">Submit</button>
-      </form>
-      <br>
-      <img src="<%= typeof file != 'undefined' ? file : '' %>" class="responsive-img">
+
+
+        <div class="card divcold">
+          <div class="card-body">
+            <div class="btn-group1 " role="group" aria-label="Basic example">
+              <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('st')">Shirt</button>
+              <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('p')">Pants</button>
+              <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('ss')">Shoes</button>
+            </div>
+          </div>
+        </div> 
+
+        <!-- Uploading files section -->
+        <div class="container">
+          <h1>File Upload</h1>
+          <%= typeof msg != 'undefined' ? msg : '' %>
+          <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input id="temperature" type="text" name="temperature" value="" />
+            <input id="item" type="text" name="item" value="" />
+            <div class="file-field input-field">
+              <div class="btn grey">
+                <span>File</span>
+                <input name="myImage" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+            <button type="submit" class="btn" onchange="getValueSubmitFile()" id="submitFile">Submit</button>
+          </form>
+          <br>
+          <img src="<%= typeof file != 'undefined' ? file : '' %>" class="responsive-img">
+        </div>
+
+
+      </div>
     </div>
-    </div>
-  </div>
 
 
-    <div class="collapse" id="clothesToggle" height = "auto">
+      <div class="collapse" id="clothesToggle" height = "auto">
 
-      <img class="rounded mx-auto d-block img-thumbnail" id="myImage" onclick="changePic('one')" src="/images/shirtStart.png" width="33.3%" height="50%">
+        <img class="rounded mx-auto d-block img-thumbnail" id="myImage" onclick="changePic('one')" src="/images/shirtStart.png" width="33.3%" height="50%">
 
-      <img class="rounded mx-auto d-block img-thumbnail" id="myImage2"onclick="changePic('two')" src="/images/pantsStart.png" width="33.3%" height="50%">
+        <img class="rounded mx-auto d-block img-thumbnail" id="myImage2"onclick="changePic('two')" src="/images/pantsStart.png" width="33.3%" height="50%">
+        
+        <img class="rounded mx-auto d-block img-thumbnail" id="myImage3"onclick="changePic('three')" src="/images/shoesStart.png" width="33.3%" height="50%">
+        
+      </div> 
       
-      <img class="rounded mx-auto d-block img-thumbnail" id="myImage3"onclick="changePic('three')" src="/images/shoesStart.png" width="33.3%" height="50%">
-      
-    </div> 
-    
 
 
+
+    <!-- Bootstrap scripts and my script file. -->
     <script src="../js/script.js"></script>
-</body>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>   
+  </body>
 
 </html>

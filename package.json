@@ -4,27 +4,15 @@
   "description": "uploading images in node",
   "main": "app.js",
   "dependencies": {
-    "cb": "^0.1.0",
-    "destination": "^0.0.1",
     "ejs": "^3.1.6",
-    "export": "^0.1.337",
-    "exports": "0.0.1",
     "express": "^4.17.1",
-    "fetch": "^1.1.0",
-    "import": "0.0.6",
-    "jquery": "^3.6.0",
-    "jsdom": "^16.5.3",
+    "fs": "^0.0.1-security",
     "multer": "^1.4.2",
-    "node-fetch": "^2.6.1",
-    "path": "^0.12.7",
-    "post": "^0.0.1",
-    "require": "^2.4.20",
-    "rollup": "^2.47.0"
+    "path": "^0.12.7"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "node app.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }
