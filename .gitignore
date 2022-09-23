@@ -262,3 +262,6 @@ dist
 
 # any log file
 *.log
+.vscode/
+/.vscode/
+.vscode/*
