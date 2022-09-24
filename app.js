@@ -3,6 +3,30 @@ const multer = require('multer');
 const ejs = require('ejs');
 const path = require('path');
 const fs = require('fs');
+const pg = require('pg');
+
+// connecting the env file.
+const dotenv = require('dotenv');
+dotenv.config();
+
+
+// for security reasons, I am using a .env file to store my database credentials
+// the credendials are stored in the .env file as follows:
+// DATABASE_URL=postgres://postgres:<password>@localhost:<port>/<database>
+const connectionString = process.env.DATABASE_URL;
+const client = new pg.Client(connectionString);
+client.connect();
+
+
+// checking if my postgress connection is working properly or not
+client.query('SELECT * FROM SOMETHING', (err, res) => {
+  console.log(err, res.rows[0]);
+  client.end();
+});
+
+
+
+
 
 //reads the files names from the folder and puts them in the files variable
 var files = fs.readdirSync('./public/uploads/');
@@ -91,7 +115,7 @@ app.post('/upload', (req, res) => {
 
 
 
-const port = 3000;
-app.listen(port, () => console.log(`Server started on port ${port}`));
+// app listens to the port 3000
+app.listen(process.env.PORT, () => console.log(`Server started on port ${process.env.PORT}\nTo stop the process press ctrl + c`));
 
 
