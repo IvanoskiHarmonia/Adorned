@@ -19,7 +19,7 @@ client.connect();
 
 
 // checking if my postgress connection is working properly or not
-client.query('SELECT * FROM SOMETHING', (err, res) => {
+client.query('SELECT * FROM USERS', (err, res) => {
   console.log(err, res.rows[0]);
   client.end();
 });
@@ -75,7 +75,8 @@ app.set('view engine', 'ejs');
 // serve static folder Folder
 app.use(express.static('./public'));
 
-app.get('/', (req, res) => res.render('index'));
+app.get('/', (req, res) => res.render('landing'));
+// app.get('/', (req, res) => res.render('index'));
 
 app.get('/clothes', function(request, response){
   console.log('Files Sent!!!');
