@@ -18,11 +18,13 @@ const clothes = {
 function loadClothes(){
   var xh = new XMLHttpRequest();
   xh.open("GET", window.location.origin + '/clothes', true);
-  xh.send(null);
+  // xh.setRequestHeader('Content-Type', 'application/json');
+  const sendVal = document.getElementById('username').value;
+  
   
   // I gave this explanations to my self my googling the, and still got them wrong lmao.
-  // syncronous - everything works at the same time
-  // asyncronous - functions that work in order.
+  // syncronous - only 1 request at a time
+  // asyncronous - multiple requests at a time
   xh.onload = function(){
     var data = JSON.parse(xh.responseText);
 
@@ -38,7 +40,9 @@ function loadClothes(){
 
     //setting the filesNames to the items field I have so I can use it later
     clothes.setItems = filesNames;
+    
   }
+  xh.send(sendVal);
 }
 
 

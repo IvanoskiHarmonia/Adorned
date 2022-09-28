@@ -4,6 +4,7 @@
   "description": "uploading images in node",
   "main": "app.js",
   "dependencies": {
+    "body-parser": "^1.20.0",
     "dotenv": "^16.0.2",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
@@ -15,7 +16,9 @@
   "scripts": {
     "comment": "the killStart script is used to kill the process running on port 3000 and 3001 because sometimes the process doesn't get killed and the port remains occupied",
     "killStart": "kill -9 $(lsof -ti:3000,3001) && node app.js",
-    "start": "npx nodemon app.js"
+    "start": "npx nodemon app.js",
+    "startC": "npm run open && npx nodemon app.js",
+    "open": "open -a 'Google Chrome' http://localhost:3000/"
   },
   "author": "",
   "license": "MIT",

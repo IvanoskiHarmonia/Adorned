@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="../styles/style.css">
+    <title>Home - Adorned</title>
   </head>
 
   <body>
@@ -11,7 +12,7 @@
     
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item">
-          <a class="nav-link activeHome" href="http://localhost:3000/">Home</a>
+          <a class="nav-link activeHome" href="/">Adorned</a>
         </li>
         <li class="nav-item">
           <a class="nav-link navbarCol" data-toggle="collapse" href="#uploadToggle" role="button" aria-expanded="false" aria-controls="uploadToggle" >Upload
@@ -50,6 +51,8 @@
           <h1>File Upload</h1>
           <%= typeof msg != 'undefined' ? msg : '' %>
           <form action="/upload" method="POST" enctype="multipart/form-data">
+            <!-- <%= data.username %> -->
+            <input type="hidden" name="username" id="username" value="<%= data.username %>" />
             <input id="temperature" type="text" name="temperature" value="" />
             <input id="item" type="text" name="item" value="" />
             <div class="file-field input-field">

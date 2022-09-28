@@ -1,12 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../styles/landing.css">
+    
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Adorned</title>
 </head>
 <body>
-    <p>It works!</p>
+    <!-- <a href="/login">Login</a> -->
+    <nav class="navbar fixed-top navbar-dark bg-dark justify-content-between" style="height: 40;">
+        <a class="navbar-brand m-1" href="/home" title="Please know that if you do not login you will not be able to use the features of the site.">Adorned</a>
+
+
+        <a class="navbar-brand m-1" href="/login">Login <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" fill="#ffffff" d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"></path></svg></a>
+    </nav>
+
+
+    <main>
+        <div class="container-1">
+            <div class="container-1-img"></div>
+            <div class="container-1-content">
+                <h1>Adorned</h1>
+                <p>Adorned is a website that allows you to store your outfits and then just access them through your phone so you can choose what to wear without the need to look at your closet.</p>
+                <p>Adorned also helps you with matching your clothes by displaying them on top of each other so you can choose what to wear and if they go good together.</p>
+                <a href="/register" class="btn btn-primary">Register Now</a>
+                <p>If you want to know more please go <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path fill="#ffffff" d="M6 8.8c-.2 0-.4-.1-.5-.2L2.2 5.3c-.3-.3-.3-.8 0-1.1s.8-.3 1.1 0L6 6.9l2.7-2.7c.3-.3.8-.3 1.1 0s.3.8 0 1.1L6.6 8.5c-.2.2-.4.3-.6.3z"></path></svg> or <a href="#container-2" class="badge badge-dark">next section</a></p>
+            </div>
+        </div>
+        <div class="container-2" id="container-2">
+            <div class="container-2-img"></div>
+            <div class="container-2-content">
+                <h1>How it works</h1>
+                <p>Our site stores the pictures on our database and pictures can be only accessed by your username and <strong class="text-light bg-dark">Validation Token</strong> that is given to you upon after every login. <br>If you haven't logged on your pictures will not be available due to the validation token missing.</p>
+            </div>
+        </div>
+    </main>
+
+    
+
+    
 </body>
 </html>
