@@ -4,6 +4,7 @@
   "description": "uploading images in node",
   "main": "app.js",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
     "dotenv": "^16.0.2",
     "ejs": "^3.1.6",

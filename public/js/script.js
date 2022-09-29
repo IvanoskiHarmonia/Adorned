@@ -1,48 +1,63 @@
-window.onload = function(){
+window.onload = async function(){
   console.log(window.location.origin + '/clothes');
+  // make them wait a bit
+  await new Promise(r => setTimeout(r, 1000));
+  getToken();
+
+  await new Promise(r => setTimeout(r, 1000));
   loadClothes();
 };
 
 var filesNames = [];
 
 // No reason at all to do this.
-const clothes = {
-  items : "filesNames[0]",
-  set setItems(setItems) {
-    this.items = setItems;
-  }
-};
+// const clothes = {
+//   items : "filesNames[0]",
+//   set setItems(setItems) {
+//     this.items = setItems;
+//   }
+// };
+const clothes = [];
 
+function getToken() {
+  var xh = new XMLHttpRequest();
+  const params = 'username=' + document.getElementById('username').value;
+  xh.open("GET", window.location.origin + '/token?' + params , true);
+  xh.send(null);
+  xh.onload = function(){
+    var data = JSON.parse(xh.responseText);
+    localStorage.setItem('token', data);
+  }
+}
+
+// when tab is closed delete token from local storage and server
+window.onbeforeunload = function(){
+  localStorage.removeItem('token');
+  var xh = new XMLHttpRequest();
+  const params = 'username=' + document.getElementById('username').value;
+  xh.open("POST", window.location.origin + '/logout?' + params, true);
+  xh.send(null);
+};
 
 
 function loadClothes(){
   var xh = new XMLHttpRequest();
-  xh.open("GET", window.location.origin + '/clothes', true);
+  const params = 'username=' + document.getElementById('username').value;
+  const token = "&token=" + localStorage.getItem('token');
+  xh.open("GET", window.location.origin + '/clothes?' + params + token, true);
   // xh.setRequestHeader('Content-Type', 'application/json');
-  const sendVal = document.getElementById('username').value;
+  xh.send(null);
   
-  
-  // I gave this explanations to my self my googling the, and still got them wrong lmao.
   // syncronous - only 1 request at a time
   // asyncronous - multiple requests at a time
   xh.onload = function(){
     var data = JSON.parse(xh.responseText);
 
-    // this is the reason why you need to understand something before you do it.
-    // I had no idea how to access elements in 2D arrays lmao. 
-    console.log(data[0][0]);
+    clothes.push(...data);
 
-    // WHY DID I DO THIS
-    data.forEach( dataItems => {
-        for (let i = 0; i < dataItems.length; ++i)
-          filesNames[i] = dataItems[i];
-    });
-
-    //setting the filesNames to the items field I have so I can use it later
-    clothes.setItems = filesNames;
-    
+    console.log(clothes);
   }
-  xh.send(sendVal);
+  
 }
 
 
@@ -52,20 +67,20 @@ function loadClothes(){
 // Spaghetti are less confusing than this I am ashamed...
 var warmShirts = [],warmPants = [], warmShoes = [],coldShirts = [],coldPants = [], coldShoes = [];
 function itemsParse() {
-  for(let i = 0;i < clothes.items.length; ++i){
-    if(clothes.items[i].charAt(0)=='w' && clothes.items[i].charAt(1)=='i')
-      warmShirts.push(clothes.items[i]); 
-    else if(clothes.items[i].charAt(0)=='w' && clothes.items[i].charAt(1)=='n')
-      warmPants.push(clothes.items[i]); 
-    else if(clothes.items[i].charAt(0)=='w' && clothes.items[i].charAt(1)=='o')
-      warmShoes.push(clothes.items[i]);
-    else if(clothes.items[i].charAt(0)=='c' && clothes.items[i].charAt(1)=='i')
-      coldShirts.push(clothes.items[i]);
-    else if(clothes.items[i].charAt(0)=='c' && clothes.items[i].charAt(1)=='n')
-      coldPants.push(clothes.items[i]);
-    else if(clothes.items[i].charAt(0)=='c' && clothes.items[i].charAt(1)=='o')
-      coldShoes.push(clothes.items[i]);
-  }
+  // for(let i = 0;i < clothes.items.length; ++i){
+  //   if(clothes.items[i].charAt(0)=='w' && clothes.items[i].charAt(1)=='i')
+  //     warmShirts.push(clothes.items[i]); 
+  //   else if(clothes.items[i].charAt(0)=='w' && clothes.items[i].charAt(1)=='n')
+  //     warmPants.push(clothes.items[i]); 
+  //   else if(clothes.items[i].charAt(0)=='w' && clothes.items[i].charAt(1)=='o')
+  //     warmShoes.push(clothes.items[i]);
+  //   else if(clothes.items[i].charAt(0)=='c' && clothes.items[i].charAt(1)=='i')
+  //     coldShirts.push(clothes.items[i]);
+  //   else if(clothes.items[i].charAt(0)=='c' && clothes.items[i].charAt(1)=='n')
+  //     coldPants.push(clothes.items[i]);
+  //   else if(clothes.items[i].charAt(0)=='c' && clothes.items[i].charAt(1)=='o')
+  //     coldShoes.push(clothes.items[i]);
+  // }
 
 }
 

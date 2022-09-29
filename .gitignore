@@ -262,9 +262,18 @@ dist
 
 # any log file
 *.log
+
+# vscode folders
 .vscode/
 /.vscode/
 .vscode/*
 
 # DS_Store
 .DS_Store
+
+# any rest file
+*.rest
+**/*.rest
+
+# extra folder for tests and other stuff
+extras/

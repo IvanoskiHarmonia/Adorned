@@ -51,8 +51,11 @@
           <h1>File Upload</h1>
           <%= typeof msg != 'undefined' ? msg : '' %>
           <form action="/upload" method="POST" enctype="multipart/form-data">
-            <!-- <%= data.username %> -->
-            <input type="hidden" name="username" id="username" value="<%= data.username %>" />
+            <!-- <%= typeof data != 'undefined' ? data.username : ''%> -->
+            
+            <input type="hidden" name="username" id="username" value="<%= typeof data != 'undefined' ? data.username : '' %>" />
+            
+            
             <input id="temperature" type="text" name="temperature" value="" />
             <input id="item" type="text" name="item" value="" />
             <div class="file-field input-field">

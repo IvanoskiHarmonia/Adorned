@@ -17,8 +17,10 @@
     </nav>
     <div class="login-form-container">
         <form action="/login" method="post">
-            <div class="form-group">
+            <div style="color: red; word-wrap: break-word; width: 75%;text-align: center;">
                 <%= typeof msg != 'undefined' ? msg : '' %>
+            </div>
+            <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" class="form-control" name="username" id="username" aria-describedby="username-input" placeholder="Username..." required>
                 <small id="username-input" class="form-text text-muted">We'll never share your username with anyone else.</small>
@@ -27,10 +29,6 @@
                 <label for="password">Password</label>
                 <input type="password" class="form-control" name="password" id="password" placeholder="Password..." required>
                 <small id="email-input" class="form-text text-muted">We'll never share your password with anyone else.</small>
-            </div>
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="confirm" id="confirm" required>
-                <label class="form-check-label" for="confirm">Confirm</label>
             </div>
             <button type="login" class="btn btn-primary">Login</button>
         </form>

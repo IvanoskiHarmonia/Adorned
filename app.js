@@ -1,25 +1,31 @@
+// express server dependencies
 const express = require('express');
+const app = express();
 const bodyParser = require('body-parser');
-const multer = require('multer');
 const ejs = require('ejs');
+
+
+// reqire bcrypt
+const bcrypt = require('bcrypt');
+
+
+// picture upload dependencies
+const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+
+
+// Database dependency
 const pg = require('pg');
 
-// connecting the env file.
+// connecting the env file. dotenv is a zero-dependency module that loads environment variables from a .env file into process.env
 const dotenv = require('dotenv');
 dotenv.config();
-
-// Invoking the express function, 
-// express has a single function so this way when we give the function to the constant app we are allowed to invoke express functions on demand.
-const app = express();
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
-
 
 
 // for security reasons, I am using a .env file to store my database credentials
@@ -30,18 +36,9 @@ const client = new pg.Client(connectionString);
 client.connect();
 
 
-// checking if my postgress connection is working properly or not
-client.query('SELECT * FROM USERS', (err, res) => {
-  console.log(err, res.rows[0]);
-});
 
 
-
-
-
-//reads the files names from the folder and puts them in the files variable
-var files = fs.readdirSync('./public/uploads/');
-
+/* ----------------------------------------- START: Upload picture function -------------------------------------------- */
 
 const storage = multer.diskStorage({
   destination: './public/uploads/',
@@ -76,32 +73,6 @@ function checkFileType(file, cb){
   }
 }
 
-
-
-// view ejs file this can be fixed later because I don't like ejs html.
-app.set('view engine', 'ejs');
-
-// serve static folder Folder
-app.use(express.static('./public'));
-
-app.get('/', (req, res) => res.render('landing'));
-app.get('/register', (req, res) => res.render('register'));
-app.get('/login', (req, res) => res.render('login'));
-app.get('/home', (req, res) => res.render('index'));
-
-// sleep function
-function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-
-
-app.get('/clothes', function(request, response){
-  console.log('Files Sent!!!', request.body.username); // this can be done only by post requests
-  response.json([
-    files
-  ]);
-});
-
-
-
 // what post does is basically CRUD principle update to the *database*,
 // which here my database is uploads folder inside of the public directory
 app.post('/upload', (req, res) => {
@@ -126,11 +97,52 @@ app.post('/upload', (req, res) => {
           file: `uploads/${req.file.filename}`
         }); // end of res.render
         // client.query('INSERT INTO pictures (UserID, picname) VALUES ($1, $2)', [req.body.username, req.file.filename]);
-      } // no undefined else
+      } // storing image else
     } // no error else
   }); // end of upload
 
 }); // end of app.post
+
+
+
+
+/* ----------------------------------------- END: Upload picture function -------------------------------------------- */
+
+
+
+// view ejs file this can be fixed later because I don't like ejs html.
+app.set('view engine', 'ejs');
+
+// serve static folder Folder
+app.use(express.static('./public'));
+
+// request for the all of my pages.
+app.get('/', (req, res) => res.render('landing'));
+app.get('/register', (req, res) => res.render('register'));
+app.get('/login', (req, res) => res.render('login'));
+app.get('/home', (req, res) => res.render('index'));
+
+// sleep function
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+
+app.get('/clothes', async function(request, response){
+  try {
+    const token = request.query.token;
+    const verfiy = await client.query('SELECT * FROM users WHERE utoken = $1', [token]);
+    if (verfiy.rows.length > 0) {
+      const usersPics = await client.query('SELECT PICNAME FROM PICTURES WHERE USERID IN (SELECT USERID FROM USERS WHERE username = $1);', [request.query.username]);
+
+      response.json( usersPics.rows );
+    }
+  }
+  catch (err) {
+    response.status(500).send(err.message);
+  }  
+});
+
+
+
 
 
 
@@ -158,10 +170,8 @@ app.post('/register', async (req, res) => {
       });
     } else { // if the user does not exist
       //create user
-      client.query('INSERT INTO users (username, password) VALUES ($1, $2)', [req.body.username, req.body.password]);
-      res.render('register', {
-        msg: 'User created'
-      });
+      const hashPass = await bcrypt.hash(req.body.password, 10);
+      client.query('INSERT INTO users (username, upassword) VALUES ($1, $2)', [req.body.username, hashPass]);
       await sleep(2000); // wait for 2 seconds
       res.render('login');
     }
@@ -180,32 +190,74 @@ app.post('/register', async (req, res) => {
 
 
 app.post('/login', async (req, res) => {
-  // console.log(req.body);
-  // so first I need to check if the user already exists in the database
-  // if it does then I need to check if the password matches
-  // if it does then I need to send the user to the home page
-  // if it does not then I need to send a message saying that the password is incorrect
-  // when redirecting to the home page I need to send the user's username to the home page
   // not the best way to do it but it works for now.
-  const checkUsernameExistance = await client.query('SELECT EXISTS(SELECT username FROM users WHERE username = $1)', [req.body.username]);
-  // console.log(checkUsernameExistance);
-  if(checkUsernameExistance.rows[0].exists){ // if the user exists
-    //check if password matches
-    const checkPassword = await client.query('SELECT upassword FROM users WHERE username = $1', [req.body.username]);
-    if(checkPassword.rows[0].upassword === req.body.password){ // if the password matches
-      res.render('index', { data : { username : req.body.username } });
-    } else { // if the password does not match
+  const username = req.body.username.toString();
+  // console.log(/^[a-z0-9]+$/i.test(username));
+  if(!/^[A-Za-z0-9]+$/i.test(username)){ // if the username is not alphanumeric
+    // res.status(400).send('Username must be alphanumeric');
+    res.render('login', {
+      msg: 'Username must be alphanumeric'
+    });
+  } 
+  else if(!/^[A-Za-z0-9_@./#&+-/!]+$/i.test(req.body.password)){ // if password has anything else than alphanumeric and _@./#&+-/!
+    res.render('login', { msg: 'Password must be alphanumeric and _ , @ , . , # , & , + , - , !' });
+  }
+  else  {
+    const checkUsernameExistance = await client.query('SELECT EXISTS(SELECT username FROM users WHERE username = $1)', [req.body.username]);
+    // console.log(checkUsernameExistance);
+    if(checkUsernameExistance.rows[0].exists){ // if the user exists
+      //check if password matches
+      const checkPassword = await client.query('SELECT upassword FROM users WHERE username = $1', [req.body.username]);
+      // console.log(checkPassword.rows[0].upassword + ' ' + req.body.password);
+      if(bcrypt.compareSync(req.body.password, checkPassword.rows[0].upassword)){ 
+        // console.log(bcrypt.compareSync(req.body.password, checkPassword.rows[0].upassword));
+        var rand = function() { return Math.random().toString(36).substr(2); };
+        var token = function() { return rand() + new Date().toString().replaceAll(' ', '') + rand();};
+  
+        var token = token();
+        await client.query('UPDATE users SET UTOKEN = $1 WHERE username = $2', [token, req.body.username]);
+        
+        res.render('index', { data : { username : req.body.username } });
+  
+  
+  
+      } else { // if the password does not match
+        res.render('login', {
+          msg: 'Password or Username is incorrect, please try again'
+        });
+      }
+  
+    } else { // if the user does not exist
       res.render('login', {
-        msg: 'Password is incorrect'
+        msg: 'Username does not exist'
       });
     }
 
-  } else { // if the user does not exist
-    res.render('login', {
-      msg: 'Username does not exist'
-    });
+  } // end of else 
+}); // end of app.post /login
+
+
+
+app.get('/token', async (req, res) => {
+  const checkToken = await client.query('SELECT EXISTS(SELECT utoken FROM users WHERE username = $1)', [req.query.username]);
+  if(checkToken.rows[0].exists){
+    const sendToken = await client.query('SELECT utoken FROM users WHERE username = $1', [req.query.username]);
+    res.json(sendToken.rows[0].utoken);
+  } else {
+    res.status(500).send('No token found for this user, please login again');
   }
 });
+
+app.post('/logout', async (req, res) => {
+  await client.query('UPDATE users SET UTOKEN = $1 WHERE username = $2', [null, req.query.username]);
+});
+
+
+
+
+
+
+
 
 
 
