@@ -2,7 +2,7 @@ window.onload = async function(){
   console.log(window.location.origin + '/clothes');
   // make them wait a bit
   await new Promise(r => setTimeout(r, 1000));
-  getToken();
+  setToken();
 
   await new Promise(r => setTimeout(r, 1000));
   loadClothes();
@@ -19,25 +19,37 @@ var filesNames = [];
 // };
 const clothes = [];
 
-function getToken() {
-  var xh = new XMLHttpRequest();
-  const params = 'username=' + document.getElementById('username').value;
-  xh.open("GET", window.location.origin + '/token?' + params , true);
-  xh.send(null);
-  xh.onload = function(){
-    var data = JSON.parse(xh.responseText);
-    localStorage.setItem('token', data);
+function setToken() {
+  if(localStorage.getItem('token') !== null){
+    // remove the token from the local storage
+    localStorage.removeItem('token');
   }
+  localStorage.setItem('token', document.getElementById('token').value);
+    // var xh = new XMLHttpRequest();
+    // const params = 'username=' + document.getElementById('username').value;
+    // xh.open("GET", window.location.origin + '/token?' + params , true);
+    // xh.send(null);
+    // xh.onload = function(){
+    //   var data = JSON.parse(xh.responseText);
+    // }
 }
 
-// when tab is closed delete token from local storage and server
-window.onbeforeunload = function(){
+function deleteToken() {
   localStorage.removeItem('token');
   var xh = new XMLHttpRequest();
   const params = 'username=' + document.getElementById('username').value;
   xh.open("POST", window.location.origin + '/logout?' + params, true);
   xh.send(null);
+  return;
+}
+
+// when tab is closed delete token from local storage and server
+window.onbeforeunload = function(){
+  deleteToken();
 };
+// window.onbeforeunload = {
+//   deleteToken();
+// };
 
 
 function loadClothes(){

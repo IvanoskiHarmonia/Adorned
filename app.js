@@ -8,6 +8,9 @@ const ejs = require('ejs');
 // reqire bcrypt
 const bcrypt = require('bcrypt');
 
+// require jwt
+const jwt = require('jsonwebtoken');
+
 
 // picture upload dependencies
 const multer = require('multer');
@@ -34,6 +37,11 @@ app.use(bodyParser.json());
 const connectionString = process.env.DATABASE_URL;
 const client = new pg.Client(connectionString);
 client.connect();
+
+// check if pg is connected
+// client.query('SELECT NOW()', (err, res) => {
+//   console.log(err, res)
+// })
 
 
 
@@ -131,6 +139,7 @@ app.get('/clothes', async function(request, response){
     const token = request.query.token;
     const verfiy = await client.query('SELECT * FROM users WHERE utoken = $1', [token]);
     if (verfiy.rows.length > 0) {
+      
       const usersPics = await client.query('SELECT PICNAME FROM PICTURES WHERE USERID IN (SELECT USERID FROM USERS WHERE username = $1);', [request.query.username]);
 
       response.json( usersPics.rows );
@@ -191,18 +200,16 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   // not the best way to do it but it works for now.
-  const username = req.body.username.toString();
-  // console.log(/^[a-z0-9]+$/i.test(username));
-  if(!/^[A-Za-z0-9]+$/i.test(username)){ // if the username is not alphanumeric
+  if(!/^[A-Za-z0-9]+$/i.test(req.body.username)){ // if the username is not alphanumeric
     // res.status(400).send('Username must be alphanumeric');
-    res.render('login', {
-      msg: 'Username must be alphanumeric'
-    });
+    res.render('login', { msg: 'Username must be alphanumeric' });
   } 
   else if(!/^[A-Za-z0-9_@./#&+-/!]+$/i.test(req.body.password)){ // if password has anything else than alphanumeric and _@./#&+-/!
+    // res.status(400).send('Password must be alphanumeric and _ , @ , . , # , & , + , - , !');
+    
     res.render('login', { msg: 'Password must be alphanumeric and _ , @ , . , # , & , + , - , !' });
   }
-  else  {
+  else { // if the username is alphanumeric
     const checkUsernameExistance = await client.query('SELECT EXISTS(SELECT username FROM users WHERE username = $1)', [req.body.username]);
     // console.log(checkUsernameExistance);
     if(checkUsernameExistance.rows[0].exists){ // if the user exists
@@ -210,14 +217,14 @@ app.post('/login', async (req, res) => {
       const checkPassword = await client.query('SELECT upassword FROM users WHERE username = $1', [req.body.username]);
       // console.log(checkPassword.rows[0].upassword + ' ' + req.body.password);
       if(bcrypt.compareSync(req.body.password, checkPassword.rows[0].upassword)){ 
-        // console.log(bcrypt.compareSync(req.body.password, checkPassword.rows[0].upassword));
         var rand = function() { return Math.random().toString(36).substr(2); };
         var token = function() { return rand() + new Date().toString().replaceAll(' ', '') + rand();};
   
-        var token = token();
-        await client.query('UPDATE users SET UTOKEN = $1 WHERE username = $2', [token, req.body.username]);
-        
-        res.render('index', { data : { username : req.body.username } });
+        const token1 = token();
+
+        client.query('UPDATE users SET UTOKEN = $1 WHERE username = $2', [token1, req.body.username]);
+        // res.render('index', {, username: req.body.username});
+        res.render('index', { data : { tokens: token1, username : req.body.username } });
   
   
   
@@ -232,16 +239,20 @@ app.post('/login', async (req, res) => {
         msg: 'Username does not exist'
       });
     }
-
-  } // end of else 
+    
+  } // end of else if username is alphanumeric and password is alphanumeric and _@./#&+-/!
 }); // end of app.post /login
 
 
 
 app.get('/token', async (req, res) => {
   const checkToken = await client.query('SELECT EXISTS(SELECT utoken FROM users WHERE username = $1)', [req.query.username]);
+  // const sendToken = await client.query('SELECT utoken FROM users WHERE username = $1', [req.query.username]);
+  console.log(sendToken.rows[0].utoken);
   if(checkToken.rows[0].exists){
+    console.log('token exists ' + req.query.username);
     const sendToken = await client.query('SELECT utoken FROM users WHERE username = $1', [req.query.username]);
+    console.log(sendToken.rows[0].utoken);
     res.json(sendToken.rows[0].utoken);
   } else {
     res.status(500).send('No token found for this user, please login again');
@@ -254,15 +265,50 @@ app.post('/logout', async (req, res) => {
 
 
 
+// had to test how jwt works it actually very easy to use.
 
+const userToken = [];
 
+// needs a post request to check how jwt works
+app.post('/user/signup', async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+  const email = req.body.email;
+  const token = jwt.sign({ username: username }, 
+                          process.env.JWT_SECRET, 
+                          { expiresIn: process.env.JWT_EXPIRES_IN, });
+  userToken.push(token);
+    res.status(201).json({
+      status: 'success',
+      token,
+      data: {
+        user: username
+      }
+    }); // end of res.status(200).json
+}); // end of app.post /signup
 
+// needs a post request to verify the token
+app.post('/user/signup/auth', async (req, res) => {
+  const token = userToken[0];
 
+  if(token){
 
+    const verfiyToken = jwt.verify(token, process.env.JWT_SECRET);
 
+    res.status(201).json({
+      status: 'success',
+      data: verfiyToken
+    });
+  } else {
+    res.status(401).json({
+      status: 'fail',
+      message: 'Token not found'
+    });
+  }
+}); // end of app.post /user/login/auth
 
+const PORT = process.env.PORT || 3000;
 
 // app listens to the port 3000
-app.listen(process.env.PORT, () => console.log(`Server started on port ${process.env.PORT}\nTo stop the process press ctrl + c`));
-
-
+app.listen(PORT, () => console.log(`Server started on port ${PORT}\nTo stop the process press ctrl + c`));
