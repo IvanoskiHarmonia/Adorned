@@ -20,27 +20,11 @@ var filesNames = [];
 const clothes = [];
 
 function setToken() {
-  if(localStorage.getItem('token') !== null){
-    // remove the token from the local storage
-    localStorage.removeItem('token');
-  }
-  localStorage.setItem('token', document.getElementById('token').value);
-    // var xh = new XMLHttpRequest();
-    // const params = 'username=' + document.getElementById('username').value;
-    // xh.open("GET", window.location.origin + '/token?' + params , true);
-    // xh.send(null);
-    // xh.onload = function(){
-    //   var data = JSON.parse(xh.responseText);
-    // }
+  sessionStorage.setItem('token', document.getElementById('token').value);
 }
 
 function deleteToken() {
-  localStorage.removeItem('token');
-  var xh = new XMLHttpRequest();
-  const params = 'username=' + document.getElementById('username').value;
-  xh.open("POST", window.location.origin + '/logout?' + params, true);
-  xh.send(null);
-  return;
+  sessionStorage.removeItem('token'); // even if the sessionStorage is deleted when browser is closed, this is just making sure that the token is deleted.
 }
 
 // when tab is closed delete token from local storage and server
@@ -55,7 +39,8 @@ window.onbeforeunload = function(){
 function loadClothes(){
   var xh = new XMLHttpRequest();
   const params = 'username=' + document.getElementById('username').value;
-  const token = "&token=" + localStorage.getItem('token');
+  console.log(sessionStorage.getItem('token'));
+  const token = "&token=" + sessionStorage.getItem('token');
   xh.open("GET", window.location.origin + '/clothes?' + params + token, true);
   // xh.setRequestHeader('Content-Type', 'application/json');
   xh.send(null);

@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
 
+const pathModules = "./myModules/";
 
 // reqire bcrypt
 const bcrypt = require('bcrypt');
@@ -37,11 +38,6 @@ app.use(bodyParser.json());
 const connectionString = process.env.DATABASE_URL;
 const client = new pg.Client(connectionString);
 client.connect();
-
-// check if pg is connected
-// client.query('SELECT NOW()', (err, res) => {
-//   console.log(err, res)
-// })
 
 
 
@@ -83,10 +79,9 @@ function checkFileType(file, cb){
 
 // what post does is basically CRUD principle update to the *database*,
 // which here my database is uploads folder inside of the public directory
-app.post('/upload', (req, res) => {
+app.post('/upload', async (req, res) => {
 
-  upload(req, res, (err) => {
-    console.log(req.body.temperature + req.body.item);
+  upload(req, res, async (err) => {
     if(err){ // if there is an error
       res.render('index', {
         input: `${files}`,
@@ -99,12 +94,24 @@ app.post('/upload', (req, res) => {
           msg: 'Error: No File Selected!'
         });
       } else { // if the file is selected then it will be uploaded to the uploads folder
-        res.render('index', {
-          input: `${files}`,
-          msg: 'File Uploaded!',
-          file: `uploads/${req.file.filename}`
-        }); // end of res.render
-        // client.query('INSERT INTO pictures (UserID, picname) VALUES ($1, $2)', [req.body.username, req.file.filename]);
+
+
+          const token = req.body.token;
+          jwt.verify(token, process.env.JWT_SECRET)
+          
+          const username = req.body.username.replaceAll(/[^A-Za-z0-9_@./#&+-/!]/ig, '');
+          
+          const userId = await client.query('SELECT USERID FROM USERS WHERE USERNAME = $1', [username]); //getUserId(username);
+          
+          client.query('INSERT INTO pictures (UserID, picname) VALUES ($1, $2)', [userId.rows[0].userid, req.file.filename]);
+          
+          res.render('index', { data: {
+              username: username,
+              token: token
+            } 
+          }); // end of res.render
+        
+        
       } // storing image else
     } // no error else
   }); // end of upload
@@ -134,18 +141,25 @@ app.get('/home', (req, res) => res.render('index'));
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 
+
+
+// fetching the existing clothes from the database
 app.get('/clothes', async function(request, response){
+
   try {
     const token = request.query.token;
-    const verfiy = await client.query('SELECT * FROM users WHERE utoken = $1', [token]);
-    if (verfiy.rows.length > 0) {
+    try {
+      jwt.verify(token, process.env.JWT_SECRET);
       
-      const usersPics = await client.query('SELECT PICNAME FROM PICTURES WHERE USERID IN (SELECT USERID FROM USERS WHERE username = $1);', [request.query.username]);
+      const username = request.query.username.replaceAll(/[^A-Za-z0-9_@./#&+-/!]/ig, "");
+
+      const usersPics = await client.query('SELECT PICNAME FROM PICTURES WHERE USERID IN (SELECT USERID FROM USERS WHERE username = $1);', [username]);
 
       response.json( usersPics.rows );
+    } catch {
+      response.redirect('/login');
     }
-  }
-  catch (err) {
+  }catch (err) {
     response.status(500).send(err.message);
   }  
 });
@@ -164,40 +178,51 @@ app.get('/clothes', async function(request, response){
 
 
 
-
+/* ----------------------------------------- START: Register function -------------------------------------------- */
 app.post('/register', async (req, res) => {
   // console.log(req.body);
   // so first I need to check if the user already exists in the database
   // if the user exists then I need to send a message saying that the user already exists
   // if the user does not exist then I need to create a new user in the database
-  if(req.body.password === req.body.confirmPassword){ // if the passwords match
-    //check if user exists
-    const checkUsernameExistance = await client.query('SELECT EXISTS(SELECT username FROM users WHERE username = $1)', [req.body.username]);
-    if(checkUsernameExistance.rows[0].exists){ // if the user exists
+  if(!/^[A-Za-z0-9]+$/i.test(req.body.username)){ // if the username is not alphanumeric
+    // res.status(400).send('Username must be alphanumeric');
+    res.render('register', { msg: 'Username must be alphanumeric' });
+  } 
+  else if(!/^[A-Za-z0-9_@./#&+-/!]+$/i.test(req.body.password)){ // if password has anything else than alphanumeric and _@./#&+-/!
+    // res.status(400).send('Password must be alphanumeric and _ , @ , . , # , & , + , - , !');
+    
+    res.render('register', { msg: 'Password must be alphanumeric and _ , @ , . , # , & , + , - , !' });
+  }
+  else {
+    if(req.body.password === req.body.confirmPassword){ // if the passwords match
+      //check if user exists
+      const checkUsernameExistance = await client.query('SELECT EXISTS(SELECT username FROM users WHERE username = $1)', [req.body.username]);
+      if(checkUsernameExistance.rows[0].exists){ // if the user exists
+        res.render('register', {
+          msg: 'Username already exists'
+        });
+      } else { // if the user does not exist
+        //create user
+        const token = jwt.sign({ username: req.body.username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+        const hashPass = await bcrypt.hash(req.body.password, 10);
+        client.query('INSERT INTO users (username, upassword, utoken) VALUES ($1, $2, $3)', [req.body.username, hashPass, token]);
+        await sleep(2000); // wait for 2 seconds
+        res.render('login');
+      }
+    } else { // if the passwords do not match
       res.render('register', {
-        msg: 'Username already exists'
+        msg: 'Passwords do not match'
       });
-    } else { // if the user does not exist
-      //create user
-      const hashPass = await bcrypt.hash(req.body.password, 10);
-      client.query('INSERT INTO users (username, upassword) VALUES ($1, $2)', [req.body.username, hashPass]);
-      await sleep(2000); // wait for 2 seconds
-      res.render('login');
     }
-  } else { // if the passwords do not match
-    res.render('register', {
-      msg: 'Passwords do not match'
-    });
   }
 
 }); // end of app.post /register
+/* ----------------------------------------- END: Register function -------------------------------------------- */
 
 
 
 
-
-
-
+/* ----------------------------------------- START: Login function -------------------------------------------- */
 app.post('/login', async (req, res) => {
   // not the best way to do it but it works for now.
   if(!/^[A-Za-z0-9]+$/i.test(req.body.username)){ // if the username is not alphanumeric
@@ -211,22 +236,28 @@ app.post('/login', async (req, res) => {
   }
   else { // if the username is alphanumeric
     const checkUsernameExistance = await client.query('SELECT EXISTS(SELECT username FROM users WHERE username = $1)', [req.body.username]);
-    // console.log(checkUsernameExistance);
+
     if(checkUsernameExistance.rows[0].exists){ // if the user exists
       //check if password matches
       const checkPassword = await client.query('SELECT upassword FROM users WHERE username = $1', [req.body.username]);
-      // console.log(checkPassword.rows[0].upassword + ' ' + req.body.password);
-      if(bcrypt.compareSync(req.body.password, checkPassword.rows[0].upassword)){ 
-        var rand = function() { return Math.random().toString(36).substr(2); };
-        var token = function() { return rand() + new Date().toString().replaceAll(' ', '') + rand();};
-  
-        const token1 = token();
 
-        client.query('UPDATE users SET UTOKEN = $1 WHERE username = $2', [token1, req.body.username]);
-        // res.render('index', {, username: req.body.username});
-        res.render('index', { data : { tokens: token1, username : req.body.username } });
-  
-  
+      if(bcrypt.compareSync(req.body.password, checkPassword.rows[0].upassword)){ 
+        // if the password matches
+        const token = await client.query('SELECT utoken FROM users WHERE username = $1', [req.body.username]);
+
+        if(token.rows.length > 0){
+          try {
+            jwt.verify(token.rows[0].utoken, process.env.JWT_SECRET);
+            
+            res.render('index', { data : { token: token.rows[0].utoken, username: req.body.username }});
+          } catch {
+            const newToken = jwt.sign({ username: req.body.username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+            client.query('UPDATE users SET utoken = $1 WHERE username = $2', [newToken, req.body.username]);
+            res.render('login', { msg: 'Last token expired, new token created. please enter your login credentials again.' });
+          }
+        } else 
+          res.render('login', { msg: 'Token not found' });
+        
   
       } else { // if the password does not match
         res.render('login', {
@@ -243,70 +274,15 @@ app.post('/login', async (req, res) => {
   } // end of else if username is alphanumeric and password is alphanumeric and _@./#&+-/!
 }); // end of app.post /login
 
+/* ----------------------------------------- END: Login function -------------------------------------------- */
 
 
-app.get('/token', async (req, res) => {
-  const checkToken = await client.query('SELECT EXISTS(SELECT utoken FROM users WHERE username = $1)', [req.query.username]);
-  // const sendToken = await client.query('SELECT utoken FROM users WHERE username = $1', [req.query.username]);
-  console.log(sendToken.rows[0].utoken);
-  if(checkToken.rows[0].exists){
-    console.log('token exists ' + req.query.username);
-    const sendToken = await client.query('SELECT utoken FROM users WHERE username = $1', [req.query.username]);
-    console.log(sendToken.rows[0].utoken);
-    res.json(sendToken.rows[0].utoken);
-  } else {
-    res.status(500).send('No token found for this user, please login again');
-  }
-});
+// const { verifyToken, createToken} = require(pathModules + 'jwtVerification');
 
-app.post('/logout', async (req, res) => {
-  await client.query('UPDATE users SET UTOKEN = $1 WHERE username = $2', [null, req.query.username]);
-});
+// // had to test how jwt works it actually very easy to use.
 
+// const userToken = [];
 
-
-// had to test how jwt works it actually very easy to use.
-
-const userToken = [];
-
-// needs a post request to check how jwt works
-app.post('/user/signup', async (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
-  const email = req.body.email;
-  const token = jwt.sign({ username: username }, 
-                          process.env.JWT_SECRET, 
-                          { expiresIn: process.env.JWT_EXPIRES_IN, });
-  userToken.push(token);
-    res.status(201).json({
-      status: 'success',
-      token,
-      data: {
-        user: username
-      }
-    }); // end of res.status(200).json
-}); // end of app.post /signup
-
-// needs a post request to verify the token
-app.post('/user/signup/auth', async (req, res) => {
-  const token = userToken[0];
-
-  if(token){
-
-    const verfiyToken = jwt.verify(token, process.env.JWT_SECRET);
-
-    res.status(201).json({
-      status: 'success',
-      data: verfiyToken
-    });
-  } else {
-    res.status(401).json({
-      status: 'fail',
-      message: 'Token not found'
-    });
-  }
-}); // end of app.post /user/login/auth
 
 const PORT = process.env.PORT || 3000;
 
