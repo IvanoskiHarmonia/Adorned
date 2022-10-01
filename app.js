@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
 
+// path to my helper modules
 const pathModules = "./myModules/";
 
 // reqire bcrypt
@@ -226,15 +227,16 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
   // not the best way to do it but it works for now.
   if(!/^[A-Za-z0-9]+$/i.test(req.body.username)){ // if the username is not alphanumeric
-    // res.status(400).send('Username must be alphanumeric');
     res.render('login', { msg: 'Username must be alphanumeric' });
   } 
-  else if(!/^[A-Za-z0-9_@./#&+-/!]+$/i.test(req.body.password)){ // if password has anything else than alphanumeric and _@./#&+-/!
-    // res.status(400).send('Password must be alphanumeric and _ , @ , . , # , & , + , - , !');
-    
+
+  else if(!/^[A-Za-z0-9_@./#&+-/!]+$/i.test(req.body.password)){ // if password has anything else than alphanumeric and _@./#&+-/!    
     res.render('login', { msg: 'Password must be alphanumeric and _ , @ , . , # , & , + , - , !' });
   }
-  else { // if the username is alphanumeric
+
+  else { // if the username and password are acceptable
+  
+  
     const checkUsernameExistance = await client.query('SELECT EXISTS(SELECT username FROM users WHERE username = $1)', [req.body.username]);
 
     if(checkUsernameExistance.rows[0].exists){ // if the user exists
@@ -255,12 +257,12 @@ app.post('/login', async (req, res) => {
             client.query('UPDATE users SET utoken = $1 WHERE username = $2', [newToken, req.body.username]);
             res.render('login', { msg: 'Last token expired, new token created. please enter your login credentials again.' });
           }
-        } else 
+        } else // if token was not found.
           res.render('login', { msg: 'Token not found' });
         
   
       } else { // if the password does not match
-        res.render('login', {
+        res.render('login', { 
           msg: 'Password or Username is incorrect, please try again'
         });
       }
@@ -271,6 +273,8 @@ app.post('/login', async (req, res) => {
       });
     }
     
+
+
   } // end of else if username is alphanumeric and password is alphanumeric and _@./#&+-/!
 }); // end of app.post /login
 
