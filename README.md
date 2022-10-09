@@ -1,6 +1,6 @@
 # Currently under construction 😅
 
-- please make sure you check it out in few day somewhere around september 30th
+- please make sure you check it out in few day somewhere around october 30th
 
 ### Current problems/challenges
 

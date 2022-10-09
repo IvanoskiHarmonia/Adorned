@@ -12,7 +12,7 @@
 -- )
 
 -- INSERT INTO USERS (USERNAME, UPassword)
--- 	VALUES ('martini', '1234567890');
+-- 	VALUES ('$1', '$2');
 
 SELECT * FROM users;
 
@@ -32,11 +32,10 @@ SELECT * FROM users;
 -- WHERE USERID IN (
 -- 	SELECT USERID
 -- 	FROM USERS
--- 	WHERE USERNAME = 'martini3'
+-- 	WHERE USERNAME = '$1'
 -- );
 
-
-	
+SELECT USERID FROM USERS WHERE USERNAME = '$1'
 
 
 	
