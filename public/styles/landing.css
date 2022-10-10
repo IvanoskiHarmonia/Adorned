@@ -36,7 +36,7 @@ html, body {
 body::-webkit-scrollbar {
     display: none;
 }
-.container-1, .container-2, .container-3 {
+.container-1, .container-2, .container-3, .container-4 {
     width: 100vw;
     height: 100vh;
     display: grid;
@@ -65,4 +65,15 @@ h1, p, a {
 ul li {
     list-style: url(../images/chevron-right.svg);
     margin: 5px 0;
+}
+
+div .sec-pic{
+    width: 384px !important;
+    height: 384px !important;
+}
+@media all and (max-width: 768px) {
+    div .sec-pic{
+        width: 320px !important;
+        height: 320px !important;
+    }
 }
