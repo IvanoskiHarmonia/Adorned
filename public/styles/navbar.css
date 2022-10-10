@@ -1,0 +1,21 @@
+
+
+
+
+.navbar {
+    height: 80px !important;
+}
+.navbar-style {
+    box-shadow: 1px 1px 5px #0000001a;
+    background-color: white !important;
+    transition: 0.2s ease-in-out;
+}
+.navbar-a-hov:hover {
+    color: #007bff !important;
+    fill: #007bff !important;
+    transition: 0.15s;
+}
+.navbar-a-hov:hover path {
+    fill: #007bff !important;
+    transition: 0.15s;
+}

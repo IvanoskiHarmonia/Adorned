@@ -18,8 +18,8 @@
   "scripts": {
     "comment": "the killStart script is used to kill the process running on port 3000 and 3001 because sometimes the process doesn't get killed and the port remains occupied",
     "killStart": "kill -9 $(lsof -ti:3000,3001) && node app.js",
-    "start": "npx nodemon app.js",
-    "startC": "npm run open && npx nodemon app.js",
+    "startDev": "npx nodemon app.js",
+    "startDevChrome": "npm run open && npx nodemon app.js",
     "open": "open -a 'Google Chrome' http://localhost:3000/"
   },
   "author": "",
