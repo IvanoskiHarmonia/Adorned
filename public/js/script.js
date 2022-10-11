@@ -39,10 +39,8 @@ window.onbeforeunload = function(){
 function loadClothes(){
   var xh = new XMLHttpRequest();
   const params = 'username=' + document.getElementById('username').value;
-  console.log(sessionStorage.getItem('token'));
   const token = "&token=" + sessionStorage.getItem('token');
   xh.open("GET", window.location.origin + '/clothes?' + params + token, true);
-  // xh.setRequestHeader('Content-Type', 'application/json');
   xh.send(null);
   
   // syncronous - only 1 request at a time
@@ -147,18 +145,13 @@ var specs = {
 
 // clicking on Warm button
 function switchTemp(wc){
-  specs.warm = wc == 'w'; // my brother helped me with this I have no idea how it works.
-  specs.cold = !specs.warm;  // this one neither.
-  console.log(specs.warm + ' ' + specs.cold); 
+  specs.warm = wc == 'w'; 
+  specs.cold = !specs.warm; 
   $("#temperature").val(specs.warm ? 'warm' : 'cold'); 
 }
-function shirtPantsShoes(str){
-  specs.shirt = str == 'st'; // 
+function shirtPantsShoes(str) {
+  specs.shirt = str == 'st';
   specs.pants = str == 'p';
   specs.shoes = str == 'ss';
   $("#item").val(specs.shirt ? 'Shirt' : (specs.pants ? 'Pants' : 'Shoes'));
 }
-
-
-
-

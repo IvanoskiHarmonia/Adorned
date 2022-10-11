@@ -9,86 +9,85 @@
 
   <body>
 
-    
-      <ul class="nav nav-pills nav-justified">
+      <ul class="nav nav-pills mb-1 py-2 justify-content-center bg-light" id="pills-tab" role="tablist">
         <li class="nav-item">
-          <a class="nav-link activeHome" href="/">Adorned</a>
+          <a class="nav-link" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link navbarCol" data-toggle="collapse" href="#uploadToggle" role="button" aria-expanded="false" aria-controls="uploadToggle" >Upload
-            <span class="sr-only">(current)</span>
-          </a>
+          <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-upload" role="tab" aria-controls="pills-upload" aria-selected="false">Upload</a>
         </li>
-        <li class="nav-item">     
-          <a class="nav-link navbarCol" onclick="itemsParse()" data-toggle="collapse" data-target="#clothesToggle" href="#clothesToggle" role="button" aria-expanded="false" aria-controls="clothesExample">Choose
-            <span class="sr-only">(current)</span>
-          </a>
+        <li class="nav-item">
+          <a class="nav-link active" id="pills-contact-tab" data-toggle="pill" href="#pills-choose" role="tab" aria-controls="pills-choose" aria-selected="true">Choose</a>
         </li>
       </ul>
+
                       
-    <div class="justify-content-center collapse" id="uploadToggle" width="33%">
-      <div class="card card-body divupload justify-content-center">
-        
-        
-        <div class="btn-group justify-content-center" role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-error" data-wc="w" onclick="switchTemp('w')">Warm</button>
-          <button type="button" class="btn btn-error" data-wc="c" onclick="switchTemp('c')">Cold</button>
-        </div>
 
-
-        <div class="card divcold">
-          <div class="card-body">
-            <div class="btn-group1 " role="group" aria-label="Basic example">
-              <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('st')">Shirt</button>
-              <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('p')">Pants</button>
-              <button type="button" class="btn btn-error" data-fileShow="w" onclick="shirtPantsShoes('ss')">Shoes</button>
-            </div>
+    <div class="tab-content" id="pills-tabContent">
+      <div class="justify-content-center tab-pane fade" id="pills-upload" role="tabpanel" aria-labelledby="pills-upload-tab">
+        <div class="card card-body justify-content-center">
+          
+          
+          <div class="btn-group justify-content-center">
+            <button type="button" class="btn btn-primary mr-2" data-wc="w" onclick="switchTemp('w')">Warm</button>
+            <button type="button" class="btn btn-primary" data-wc="c" onclick="switchTemp('c')">Cold</button>
           </div>
-        </div> 
 
-        <!-- Uploading files section -->
-        <div class="container">
-          <h1>File Upload</h1>
-          <%= typeof msg != 'undefined' ? msg : '' %>
-          <form action="/upload" method="POST" enctype="multipart/form-data">
-            <!-- <%= typeof data != 'undefined' ? data.username : ''%> -->
-            
-            <input type="hidden" name="username" id="username" value="<%= typeof data != 'undefined' ? data.username : '' %>" />
-            <input type="hidden" name="token" id="token" value="<%= typeof data != 'undefined' ? data.token : '' %>" />
-            
-            
-            <input id="temperature" type="text" name="temperature" value="" />
-            <input id="item" type="text" name="item" value="" />
-            <div class="file-field input-field">
-              <div class="btn grey">
-                <span>File</span>
-                <input name="myImage" type="file">
-              </div>
-              <div class="file-path-wrapper">
-                <input class="file-path validate" type="text">
+
+          <div class="card divcold text-center">
+            <div class="card-body">
+              <div class="btn-group1" >
+                <button type="button" class="btn btn-primary" data-fileShow="w" onclick="shirtPantsShoes('st')">Shirt</button>
+                <button type="button" class="btn btn-primary" data-fileShow="w" onclick="shirtPantsShoes('p')">Pants</button>
+                <button type="button" class="btn btn-primary" data-fileShow="w" onclick="shirtPantsShoes('ss')">Shoes</button>
               </div>
             </div>
-            <button type="submit" class="btn" onchange="getValueSubmitFile()" id="submitFile">Submit</button>
-          </form>
-          <br>
-          <img src="<%= typeof file != 'undefined' ? file : '' %>" class="responsive-img">
+          </div> 
+
+          <!-- Uploading files section -->
+          <div class="container">
+            <h1>File Upload</h1>
+            <%= typeof data.msg != 'undefined' ? data.msg : '' %>
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+              <!-- <%= typeof data != 'undefined' ? data.username : ''%> -->
+              
+              <input type="hidden" name="username" id="username" value="<%= typeof data != 'undefined' ? data.username : '' %>" />
+              <input type="hidden" name="token" id="token" value="<%= typeof data != 'undefined' ? data.token : '' %>" />
+              
+              
+              <input id="temperature" type="text" name="temperature" value="" />
+              <input id="item" type="text" name="item" value="" />
+              <div class="file-field input-field">
+                <div class="btn grey">
+                  <span>File</span>
+                  <input name="myImage" type="file">
+                </div>
+                <div class="file-path-wrapper">
+                  <input class="file-path validate" type="text">
+                </div>
+              </div>
+              <button type="submit" class="btn bg-primary" onchange="getValueSubmitFile()" id="submitFile">Submit</button>
+            </form>
+            <br>
+            <img src="<%= typeof file != 'undefined' ? file : '' %>" class="responsive-img">
+          </div>
+
         </div>
-
-
       </div>
-    </div>
 
 
-      <div class="collapse" id="clothesToggle" height = "auto">
+      <div class="tab-pane fade show active" id="pills-choose" role="tabpanel" aria-labelledby="pills-choose-tab">
 
         <img class="rounded mx-auto d-block img-thumbnail" id="myImage" onclick="changePic('one')" src="/images/shirtStart.png" width="33.3%" height="50%">
 
-        <img class="rounded mx-auto d-block img-thumbnail" id="myImage2"onclick="changePic('two')" src="/images/pantsStart.png" width="33.3%" height="50%">
+        <img class="rounded mx-auto d-block img-thumbnail" id="myImage2"onclick="changePic('two')" src="/images/pantsStart.png" width="33.3%" height="33%">
         
         <img class="rounded mx-auto d-block img-thumbnail" id="myImage3"onclick="changePic('three')" src="/images/shoesStart.png" width="33.3%" height="50%">
         
       </div> 
-      
+
+    </div>
+    
 
 
 

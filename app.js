@@ -45,11 +45,23 @@ client.connect();
 
 /* ----------------------------------------- START: Upload picture function -------------------------------------------- */
 
+function randString(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,/<>?;:"[]{}|`~!@#$%^&*()_+-=';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ )
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+
+ return result;
+}
+
+
+
 const storage = multer.diskStorage({
   destination: './public/uploads/',
   filename: function(req, file, cb){
     var reqognizeName = (req.body.temperature.charAt(0) + req.body.item.charAt(2)); 
-    cb(null,reqognizeName + file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    cb(null,reqognizeName + file.fieldname + '-' + randString(30) + '-' + Date.now() + '-' + randString(30) + path.extname(file.originalname));
   }
 });
 
@@ -83,34 +95,48 @@ function checkFileType(file, cb){
 app.post('/upload', async (req, res) => {
 
   upload(req, res, async (err) => {
+    const token = req.body.token;
+    const username = req.body.username.replaceAll(/[^A-Za-z0-9_@./#&+-/!]/ig, '');
     if(err){ // if there is an error
-      res.render('index', {
-        input: `${files}`,
-        msg: err
+      res.render('index', { data: {
+          username: username,
+          token: token,
+          msg: err
+        } 
       });
     } else { // if there is no error
       if(req.file == undefined){ // if the file is undefined
-        res.render('index', {
-          input: `${files}`,
-          msg: 'Error: No File Selected!'
+        res.render('index', { data: {
+            username: username,
+            token: token,
+            msg: 'Error: No File Selected!'
+          } 
         });
       } else { // if the file is selected then it will be uploaded to the uploads folder
 
 
-          const token = req.body.token;
-          jwt.verify(token, process.env.JWT_SECRET)
+          // const token = req.body.token;
+
+          jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+            if (err) {
+              res.redirect('/login');
+            }
+            else {
+              // const username = req.body.username.replaceAll(/[^A-Za-z0-9_@./#&+-/!]/ig, '');
           
-          const username = req.body.username.replaceAll(/[^A-Za-z0-9_@./#&+-/!]/ig, '');
+              const userId = await client.query('SELECT USERID FROM USERS WHERE USERNAME = $1', [username]); //getUserId(username);
+              
+              client.query('INSERT INTO pictures (UserID, picname) VALUES ($1, $2)', [userId.rows[0].userid, req.file.filename]);
+              
+              res.render('index', { data: {
+                  username: username,
+                  token: token
+                } 
+              }); // end of res.render
+            } // end of else
+          }); // end of jwt.verify
           
-          const userId = await client.query('SELECT USERID FROM USERS WHERE USERNAME = $1', [username]); //getUserId(username);
           
-          client.query('INSERT INTO pictures (UserID, picname) VALUES ($1, $2)', [userId.rows[0].userid, req.file.filename]);
-          
-          res.render('index', { data: {
-              username: username,
-              token: token
-            } 
-          }); // end of res.render
         
         
       } // storing image else
@@ -164,6 +190,9 @@ app.get('/clothes', async function(request, response){
     response.status(500).send(err.message);
   }  
 });
+
+
+
 
 
 
