@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const ejs = require('ejs');
 
 // path to my helper modules
-const pathModules = "./myModules/";
+// const pathModules = "./myModules/";
 
 // reqire bcrypt
 const bcrypt = require('bcrypt');
@@ -97,7 +97,17 @@ app.post('/upload', async (req, res) => {
   upload(req, res, async (err) => {
     const token = req.body.token;
     const username = req.body.username.replaceAll(/[^A-Za-z0-9_@./#&+-/!]/ig, '');
-    if(err){ // if there is an error
+    const numberOfPictures = await client.query(`SELECT COUNT(*) FROM PICTURES WHERE USERID IN (SELECT USERID FROM USERS WHERE USERNAME = '${username}')`);
+    const numberOfPicturesInt = parseInt(numberOfPictures.rows[0].count);
+
+    if(numberOfPicturesInt >= 20){
+      res.render('index', {data : {
+        username: username,
+        token: token,
+        msg: "You have reached the maximum number of pictures you can upload (20). Please delete some pictures before uploading more."
+      }})
+    }
+    else if(err){ // if there is an error
       res.render('index', { data: {
           username: username,
           token: token,
@@ -176,13 +186,19 @@ app.get('/clothes', async function(request, response){
   try {
     const token = request.query.token;
     try {
-      jwt.verify(token, process.env.JWT_SECRET);
-      
-      const username = request.query.username.replaceAll(/[^A-Za-z0-9_@./#&+-/!]/ig, "");
+      jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+        if (err) {
+          response.redirect('/login');
+        }
+        else {
+          
+          const username = request.query.username.replaceAll(/[^A-Za-z0-9_@./#&+-/!]/ig, "");
 
-      const usersPics = await client.query('SELECT PICNAME FROM PICTURES WHERE USERID IN (SELECT USERID FROM USERS WHERE username = $1);', [username]);
+          const usersPics = await client.query('SELECT PICNAME FROM PICTURES WHERE USERID IN (SELECT USERID FROM USERS WHERE username = $1);', [username]);
 
-      response.json( usersPics.rows );
+          response.json( usersPics.rows );
+        }
+      });
     } catch {
       response.redirect('/login');
     }
@@ -310,11 +326,10 @@ app.post('/login', async (req, res) => {
 /* ----------------------------------------- END: Login function -------------------------------------------- */
 
 
-// const { verifyToken, createToken} = require(pathModules + 'jwtVerification');
 
 // // had to test how jwt works it actually very easy to use.
 
-// const userToken = [];
+
 
 
 const PORT = process.env.PORT || 3000;

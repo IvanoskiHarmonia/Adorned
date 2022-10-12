@@ -277,3 +277,6 @@ dist
 
 # extra folder for tests and other stuff
 extras/
+
+# my modules
+myModules/
