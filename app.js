@@ -47,7 +47,7 @@ client.connect();
 
 function randString(length) {
   var result           = '';
-  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,/<>?;:"[]{}|`~!@#$%^&*()_+-=';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
   var charactersLength = characters.length;
   for ( var i = 0; i < length; i++ )
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -60,7 +60,7 @@ function randString(length) {
 const storage = multer.diskStorage({
   destination: './public/uploads/',
   filename: function(req, file, cb){
-    var reqognizeName = (req.body.temperature.charAt(0) + req.body.item.charAt(2)); 
+    var reqognizeName = (req.body.temperature + req.body.item); 
     cb(null,reqognizeName + file.fieldname + '-' + randString(30) + '-' + Date.now() + '-' + randString(30) + path.extname(file.originalname));
   }
 });
