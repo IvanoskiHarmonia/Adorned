@@ -11,32 +11,6 @@
 -- 	FOREIGN KEY (UserID) REFERENCES Users(UserID)
 -- )
 
--- INSERT INTO USERS (USERNAME, UPassword)
--- 	VALUES ('$1', '$2');
-
-SELECT * FROM users;
-
-
-
--- INSERT INTO PICTURES (USERID, PICNAME)
--- VALUES 
--- 	(4, 'PIC1'),
--- 	(4, 'PIC2'),
--- 	(4, 'PIC3'),
--- 	(4, 'PIC4'),
--- 	(4, 'PIC5'),
--- 	(4, 'PIC6');
-
--- SELECT PICNAME 
--- FROM PICTURES
--- WHERE USERID IN (
--- 	SELECT USERID
--- 	FROM USERS
--- 	WHERE USERNAME = '$1'
--- );
-
-SELECT USERID FROM USERS WHERE USERNAME = '$1'
-
 
 	
 	
