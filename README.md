@@ -28,8 +28,8 @@
             * database - name of the newly created database.
 
     ---
-    - PORT=3000
-    - JWT_SECRET = <your secret sentence> (Longer the better)
+    - PORT=3000 (or whatever you use for development)
+    - JWT_SECRET = <```your_secret_sentence```> (Longer the better)
     - JWT_EXPIRES_IN = 90d
     
 5. run in console ```npm run startDevChrome``` and chrome browser will start and open the app for you.
